@@ -21,7 +21,7 @@ const Footer = () => {
             <a href="#" className="text-white mx-2"><FaWhatsapp/></a>
         </div>
         {/*Copyright Section */}
-        <p className="small mb-0">&copy; 2024 Shoppit</p>
+        <p className="small mb-0">&copy; 2025 Shoppit</p>
         </div>
     </footer>
   )

@@ -1,10 +1,12 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
+// export const BASE_URL = "https://shoppit-api-5q6k.onrender.com";
 export const BASE_URL = "http://127.0.0.1:8001";
 
+
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8001",
+  baseURL: BASE_URL,
 });
 
 api.interceptors.request.use(
