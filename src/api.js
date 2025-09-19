@@ -1,7 +1,7 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-export const BASE_URL = "https://shoppit-api-1.onrender.com/";
+export const BASE_URL = "https://shoppit-api-1.onrender.com";
 
 
 
