@@ -3,10 +3,10 @@ import { NavLink } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 const NavBarLink = () => {
-  const { isAuthenticated ,setIsAuthenticated , username} = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated, username, isStaff } = useContext(AuthContext);
 
 
-  function logout(){
+  function logout() {
     localStorage.removeItem("access")
     setIsAuthenticated(false)
 
@@ -16,9 +16,24 @@ const NavBarLink = () => {
     <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
       {isAuthenticated ? (
         <>
+          {isStaff && (
+            <li className="nav-item">
+              <NavLink
+                to="/admin"
+                end
+                className={({ isActive }) =>
+                  isActive
+                    ? "nav-link active fw-semibold text-danger"
+                    : "nav-link fw-semibold text-danger"
+                }
+              >
+                Admin
+              </NavLink>
+            </li>
+          )}
           <li className="nav-item">
             <NavLink
-              to="/profile"
+              to="/"
               end
               className={({ isActive }) =>
                 isActive

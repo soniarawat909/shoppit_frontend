@@ -2,12 +2,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 const CartSummary = ({cartTotal, tax}) => {
-
-
     const subTotal = cartTotal.toFixed(2)
     const cartTax= tax.toFixed(2)
     const total = (cartTotal + tax).toFixed(2)
-
   return (
     <div className="col-md-4 align-self-start">
       <div className="card">

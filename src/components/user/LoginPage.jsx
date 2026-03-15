@@ -1,37 +1,39 @@
-import  { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
+import axios from 'axios';
 import "./LoginPage.css"
-import api from '../../api';
-import {  replace , useLocation, useNavigate } from 'react-router-dom';
+import { BACKEND_BASE } from '../../api';
+import { replace, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
 
 const LoginPage = () => {
 
-    const {setIsAuthenticated, get_username}= useContext(AuthContext)
+  const { setIsAuthenticated, get_username, handleAuth } = useContext(AuthContext)
 
-    const location = useLocation()
-    const navigate = useNavigate()
+  const location = useLocation()
+  const navigate = useNavigate()
 
-    const [username , setUsername] = useState("")
-    const [password , setPassword] = useState("")
-    
-    console.log("Submitting:", { username, password }); 
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
 
-  function handleSubmit(e){
+  console.log("Submitting:", { username, password });
+
+  function handleSubmit(e) {
     e.preventDefault()
 
-    api
-      .post("/token/", { username, password }) 
+    axios.post(BACKEND_BASE + "/token/", { username, password })
       .then((res) => {
         console.log(res.data);
-        localStorage.setItem("access", res.data.access)
-        localStorage.setItem("refresh", res.data.refresh)
+        const authData = res.data.success ? res.data.data : res.data;
+        localStorage.setItem("access", authData.access)
+        localStorage.setItem("refresh", authData.refresh)
         setUsername("")
         setPassword("")
-        setIsAuthenticated(true)
+        handleAuth()
         get_username()
 
-        const from = location?.state?.from?.pathname || "/cart" ;
+        const isAdmin = authData.user?.is_staff || false;
+        const from = location?.state?.from?.pathname || (isAdmin ? "/admin" : "/cart");
         navigate(from);
         console.log(from)
 
@@ -40,7 +42,7 @@ const LoginPage = () => {
       .catch((err) => {
         if (err.response) {
           console.log("Error status:", err.response.status);
-          console.log("Error data:", err.response.data); 
+          console.log("Error data:", err.response.data);
         } else {
           console.log("Error message:", err.message);
         }
@@ -59,8 +61,8 @@ const LoginPage = () => {
             <input
               type="username"
               className="form-control"
-              value = {username} 
-              onChange={(e) => setUsername(e.target.value)} 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               id="username"
               placeholder="Enter your username"
               required
@@ -71,7 +73,7 @@ const LoginPage = () => {
             <label htmlFor="password" className="form-label">Password</label>
             <input
               type="password"
-              value = {password} 
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="form-control"
               id="password"

@@ -6,28 +6,30 @@ import { randomValue } from '../../GenerateCartCode'
 
 const HomePage = () => {
 
-    const[products, setProducts]= useState([])
+  const [products, setProducts] = useState([])
 
-    useEffect(function(){
-      if(localStorage.getItem("cart_code")=== null){
-        localStorage.setItem("cart_code", randomValue)
-      }
-    },[])
+  useEffect(function () {
+    if (localStorage.getItem("cart_code") === null) {
+      localStorage.setItem("cart_code", randomValue)
+    }
+  }, [])
 
-    useEffect(function() {   
+  useEffect(function () {
     api.get("products")
-    .then(res => {
+      .then(res => {
         console.log(res.data)
-        setProducts(res.data)
-    })
-    .catch(err => {
-            console.error(err.message)})
-    }, [])
+        const productsData = res.data.success ? res.data.data : res.data;
+        setProducts(productsData || [])
+      })
+      .catch(err => {
+        console.error(err.message)
+      })
+  }, [])
 
   return (
     <>
-    <Header/>
-    <CardContainer products={products}/>
+      <Header />
+      <CardContainer products={products} />
     </>
   )
 }

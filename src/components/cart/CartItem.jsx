@@ -1,50 +1,50 @@
 import React, { useState } from 'react'
-import { BASE_URL } from '../../api'
+import { BASE_URL, BACKEND_BASE } from '../../api'
 import api from '../../api'
 
-const CartItem = ({item, cartitems , setCartTotal , setNumCartItems , setCartItems}) => {
+const CartItem = ({ item, cartitems, setCartTotal, setNumCartItems, setCartItems }) => {
 
-  const[quantity,setQuantity]= useState(item.quantity)
+  const [quantity, setQuantity] = useState(item.quantity)
 
-  const itemData ={quantity:quantity, item_id:item.id}
-  const itemID = {item_id: item.id}
+  const itemData = { quantity: quantity, item_id: item.id }
+  const itemID = { item_id: item.id }
 
   function deleteCartitem() {
-  const confirmDelete = window.confirm("ARE YOU SURE?");
-  
-  if (confirmDelete) {
-    api.post("delete_cartitem/", itemID)
+    const confirmDelete = window.confirm("ARE YOU SURE?");
+
+    if (confirmDelete) {
+      api.post("delete_cartitem/", itemID)
+        .then(res => {
+          console.log(res.data);
+
+          // ✅ create updated array first
+          const updatedCartItems = cartitems.filter(cartitem => cartitem.id !== item.id);
+
+          // ✅ now update states using new array
+          setCartItems(updatedCartItems);
+          setCartTotal(updatedCartItems.reduce((acc, curr) => acc + curr.total, 0));
+          setNumCartItems(updatedCartItems.reduce((acc, curr) => acc + curr.quantity, 0));
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
+    }
+  }
+
+
+  function updateCartitem() {
+    api.patch("update_quantity/", itemData)
       .then(res => {
-        console.log(res.data);
+        console.log(res.data)
 
-        // ✅ create updated array first
-        const updatedCartItems = cartitems.filter(cartitem => cartitem.id !== item.id);
+        const updatedItems = cartitems.map((cartitem) => cartitem.id === item.id ? res.data.data : cartitem)
 
-        // ✅ now update states using new array
-        setCartItems(updatedCartItems);
-        setCartTotal(updatedCartItems.reduce((acc, curr) => acc + curr.total, 0));
-        setNumCartItems(updatedCartItems.reduce((acc, curr) => acc + curr.quantity, 0));
+        setCartTotal(updatedItems.reduce((acc, curr) => acc + curr.total, 0))
+        setNumCartItems(updatedItems.reduce((acc, curr) => acc + curr.quantity, 0))
       })
       .catch(err => {
-        console.log(err.message);
-      });
-  }
-}
-
-
-  function updateCartitem(){
-    api.patch("update_quantity/", itemData)
-    .then(res =>{
-      console.log(res.data)
-
-      const updatedItems = cartitems.map((cartitem)=> cartitem.id === item.id ? res.data.data : cartitem)
-
-      setCartTotal(updatedItems.reduce((acc,curr)=> acc+curr.total,0))
-      setNumCartItems(updatedItems.reduce((acc, curr) => acc + curr.quantity, 0))
-    })
-    .catch(err =>{
-      console.log(err.message)
-    })
+        console.log(err.message)
+      })
   }
 
   return (
@@ -55,7 +55,7 @@ const CartItem = ({item, cartitems , setCartTotal , setNumCartItems , setCartIte
         style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}
       >
         <img
-          src={`${BASE_URL}${item.product.image}`}
+          src={`${BACKEND_BASE}${item.product.image}`}
           alt="Product Image"
           className="img-fluid"
           style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '5px' }}
@@ -73,7 +73,7 @@ const CartItem = ({item, cartitems , setCartTotal , setNumCartItems , setCartIte
             onChange={(e) => setQuantity(e.target.value)}
             style={{ width: '70px' }}
           />
-          <button className="btn btn btn-sm mx-2" onClick={updateCartitem} style={{backgroundColor: "#4b3bcb", color:"white"}}>Update</button>
+          <button className="btn btn btn-sm mx-2" onClick={updateCartitem} style={{ backgroundColor: "#4b3bcb", color: "white" }}>Update</button>
           <button className="btn btn-danger btn-sm" onClick={deleteCartitem}>Remove</button>
         </div>
       </div>
